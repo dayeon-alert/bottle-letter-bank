@@ -41,6 +41,7 @@ function PostViewPage() {
   };
 
   if (data == null) return null;
+
   const post = data.find((item) => {
     return item.id == postId;
   });

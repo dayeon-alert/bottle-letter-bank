@@ -8,5 +8,7 @@ module.exports = {
   updateReduceCoin:
     "update TNAD_USER_INFO set coin_cnt = coin_cnt - 1 where id=?;",
   postDelete: "delete from TNAD_LETTER_LIST where id=?;",
-  postUnlock: "update TNAD_LETTER_LIST set lock_yn = 'N' where id=?;",
+  postUnlock:
+    "update TNAD_LETTER_LIST set lock_yn = 'N' where id=?;" +
+    "update TNAD_USER_INFO set coin_cnt = coin_cnt - 1 where user_id='userid';",
 };

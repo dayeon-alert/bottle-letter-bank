@@ -28,9 +28,10 @@ app.delete("/api/post/delete/:id", async (req, res) => {
 app.put("/api/post/update/:id", async (req, res) => {
   const { id } = req.params; // 라우트 경로의 :id에 매핑되는 값
   const result = await mysql.query("postUnlock", id);
-  const resultCoin = await mysql.query("updateReduceCoin", id);
-  res.send([result, resultCoin]);
+  //const resultCoin = await mysql.query("updateReduceCoin", id);
+  res.send(result);
 });
 
 const port = 5000;
 app.listen(port, () => console.log(`포트번호 연결 ${port}!`));
+// 컴포넌트 구조화의 문제
