@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ModalButton from "../ui/ModalButton";
 
@@ -32,17 +32,22 @@ const ContentText = styled.p`
 `;
 
 export default function Modal(props) {
-  const { value, onClickClose, onClickModal } = props;
-
+  const { open, value, onClickModal } = props;
+  const [openYn, setOpenYn] = useState(open);
+  const handleChange = () => {
+    setOpenYn(false);
+  };
   return (
-    <ModalContainer>
-      <PostContainer>
-        <ContentText>{value}</ContentText>
-        <ButtonContainer>
-          <ModalButton title="아니요" onClick={onClickClose} />
-          <ModalButton title="예" onClick={onClickModal} />
-        </ButtonContainer>
-      </PostContainer>
-    </ModalContainer>
+    openYn && (
+      <ModalContainer>
+        <PostContainer>
+          <ContentText>{value}</ContentText>
+          <ButtonContainer>
+            <ModalButton title="아니요" onClick={handleChange} />
+            <ModalButton title="예" onClick={onClickModal} />
+          </ButtonContainer>
+        </PostContainer>
+      </ModalContainer>
+    )
   );
 }

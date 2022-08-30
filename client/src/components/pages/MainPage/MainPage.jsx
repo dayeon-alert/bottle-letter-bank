@@ -12,7 +12,8 @@ function MainPage() {
 
   const [data, setData] = useState([]);
   const [coin, setCoin] = useState(0);
-  const [modal, setModal] = useState("");
+  const [open, setOpen] = useState(false);
+  const [postId, setPostId] = useState(false);
   const [content, setContent] = useState("");
 
   useEffect(() => {
@@ -46,26 +47,24 @@ function MainPage() {
       });
   };
 
+  const onClickUnlock = () => {
+    axios.put(`/api/post/update/${postId}`);
+    axios
+      .get("/api/main", { params: { user_id: "userid" } }) //
+      .then((response) => {
+        setData(response.data[0]);
+        setCoin(response.data[1][0].coin_cnt);
+      });
+    setPostId("");
+  };
+
   return (
     <>
-      {modal && (
-        <Modal
-          value={`${coin}코인 중 1코인을 사용해 쪽지를 열어보겠습니까?`}
-          onClickClose={() => {
-            setModal("");
-          }}
-          onClickModal={() => {
-            axios.put(`/api/post/update/${modal}`);
-            axios
-              .get("/api/main", { params: { user_id: "userid" } }) //
-              .then((response) => {
-                setData(response.data[0]);
-                setCoin(response.data[1][0].coin_cnt);
-              });
-            setModal("");
-          }}
-        />
-      )}
+      <Modal
+        value={`${coin}코인 중 1코인을 사용해 쪽지를 열어보겠습니까?`}
+        onClickModal={onClickUnlock}
+        open={open}
+      />
       <Wrapper>
         <Container>
           <TextInput
@@ -79,9 +78,7 @@ function MainPage() {
         <PostList
           posts={data}
           onClickItem={(item) => {
-            item.lock_yn === "Y"
-              ? setModal(item.id)
-              : navigate(`post/${item.id}`);
+            item.lock_yn === "Y" ? setOpen(true) : navigate(`post/${item.id}`);
           }}
         />
       </Wrapper>
