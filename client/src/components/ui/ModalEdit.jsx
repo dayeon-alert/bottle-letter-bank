@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import ModalButton from "../ui/ModalButton";
+import ModalButton from "./ModalButton";
 
 const BackContainer = styled.div`
   top: 0;
@@ -34,7 +34,7 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-export default function Modal(props) {
+export default function ModalEdit(props) {
   const { open, value, onClickModal, onCloseModal } = props;
   return (
     <BackContainer open={open}>
