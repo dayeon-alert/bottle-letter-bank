@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import TextInput from "./TextInput";
 import styled from "styled-components";
 import ModalButton from "./ModalButton";
 
@@ -24,7 +25,7 @@ const ModalContainer = styled.div`
   font-size: 20px;
   line-height: 32px;
   white-space: pre-wrap;
-  max-width: 70%;
+  width: 70%;
 `;
 
 const ButtonContainer = styled.div`
@@ -35,16 +36,21 @@ const ButtonContainer = styled.div`
 `;
 
 export default function ModalEdit(props) {
-  const { open, value, onClickModal, onCloseModal } = props;
+  const { open, onClickModal, onCloseModal } = props;
+  const [content, setContent] = useState("");
   return (
     <BackContainer open={open}>
       {open && (
         <ModalContainer>
-          {value}
-          <ButtonContainer>
-            <ModalButton title="아니요" onClick={onCloseModal} />
-            <ModalButton title="예" onClick={onClickModal} />
-          </ButtonContainer>
+          <ModalButton title="X" onClick={onCloseModal} />
+          <TextInput
+            height={480}
+            value={content}
+            onChange={(event) => {
+              setContent(event.target.value);
+            }}
+          />
+          <ModalButton title="작성하기" onClick={onClickModal} />
         </ModalContainer>
       )}
     </BackContainer>

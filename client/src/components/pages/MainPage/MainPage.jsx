@@ -14,6 +14,7 @@ function MainPage() {
   const [data, setData] = useState([]);
   const [coin, setCoin] = useState(0);
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [postId, setPostId] = useState(false);
   const [content, setContent] = useState("");
   const sUserId = "userid";
@@ -54,20 +55,20 @@ function MainPage() {
 
   return (
     <>
+      <ModalEdit
+        onClickModal={onClickHandler}
+        onCloseModal={() => setEditOpen(false)}
+        open={editOpen}
+      />
       <Modal
         value={`${coin}코인 중 1코인을 사용해 쪽지를 열어보겠습니까?`}
         onClickModal={onClickUnlock}
         onCloseModal={() => setOpen(false)}
         open={open}
       />
-      <ModalEdit />
       <Wrapper>
         <Container>
-          <TextInput
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-          />
-          <Button title="글 작성하기" onClick={onClickHandler} />
+          <Button title="작성" onClick={() => setEditOpen(true)}></Button>
         </Container>
         <PostList
           posts={data}

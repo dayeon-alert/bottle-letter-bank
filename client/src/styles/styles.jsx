@@ -86,6 +86,7 @@ export const StyledModalButton = styled.button`
   border-width: 1px;
   border-radius: 8px;
   cursor: pointer;
+  width: fit-content;
 `;
 
 export const StyledTextarea = styled.textarea`
