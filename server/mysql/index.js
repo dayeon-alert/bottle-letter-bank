@@ -4,8 +4,9 @@ const config = require("../config/key.js");
 const pool = mysql.createPool(config.mysqlURI);
 
 const query = async (alias, values) => {
+  formatQuery = mysql.format(sql[alias], values);
   return new Promise((resolve, reject) =>
-    pool.query(sql[alias], values, (error, results) => {
+    pool.query(formatQuery, (error, results) => {
       if (error) {
         console.log(error);
         reject({

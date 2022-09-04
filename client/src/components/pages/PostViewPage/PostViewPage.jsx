@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Button from "../../ui/Button";
-import { Wrapper, Container } from "../../../styles/styles";
+import {
+  Wrapper,
+  ListWrapper,
+  PostViewButtonContainer,
+} from "../../../styles/styles";
 import axios from "axios";
 
 const PostContainer = styled.div`
@@ -43,23 +47,26 @@ function PostViewPage() {
   if (data == null) return null;
 
   const post = data.find((item) => {
-    return item.id == postId;
+    return item.post_id == postId;
   });
+
   return (
     <Wrapper>
-      <Container>
-        <Button
-          title="뒤로 가기"
-          onClick={() => {
-            navigate("/");
-          }}
-        />
-        <Button title="삭제하기" onClick={onClickHandler} />
+      <ListWrapper>
+        <PostViewButtonContainer>
+          <Button
+            title="뒤로 가기"
+            onClick={() => {
+              navigate("/");
+            }}
+          />
+          <Button title="삭제하기" onClick={onClickHandler} />
+        </PostViewButtonContainer>
         <PostContainer>
           <TitleText>{post.title}</TitleText>
           <ContentText>{post.content}</ContentText>
         </PostContainer>
-      </Container>
+      </ListWrapper>
     </Wrapper>
   );
 }

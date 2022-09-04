@@ -2,80 +2,104 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PostList from "./PostList";
-import TextInput from "../../ui/TextInput";
 import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import ModalEdit from "../../ui/ModalEdit";
-import { Wrapper, Container } from "../../../styles/styles";
+import { Wrapper, Container, BankInfoContainer } from "../../../styles/styles";
 
 function MainPage() {
   const navigate = useNavigate();
 
-  const [data, setData] = useState([]);
-  const [coin, setCoin] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [postId, setPostId] = useState(false);
-  const [content, setContent] = useState("");
-  const sUserId = "userid";
+  const [userInfoData, setUserInfoData] = useState({});
+  const [postListData, setpostListData] = useState([]);
+  const [open, setOpen] = useState("");
+  const [postId, setPostId] = useState(0);
+  const [modalVal, setModalVal] = useState();
 
-  useEffect(() => settingUserInfo(sUserId), []);
-
-  const onClickHandler = () => {
-    let dataToSubmit = {
-      param: {
-        id: "1-" + Date.now(),
-        bank_num: 1,
-        user_id: sUserId,
-        content: content,
-        lock_yn: "Y",
-      },
-    };
-    axios.post("/api/post/write", dataToSubmit);
-
-    setContent("");
-
-    settingUserInfo(sUserId);
-  };
-
-  const onClickUnlock = () => {
-    axios.put(`/api/post/update/${postId}`);
-    settingUserInfo(sUserId);
-    setOpen(false);
-  };
+  useEffect(() => settingUserInfo("userid"), []);
 
   const settingUserInfo = (userId) => {
     axios
       .get("/api/main", { params: { user_id: userId } }) //
       .then((response) => {
-        setData(response.data[0]);
-        setCoin(response.data[1][0].coin_cnt);
+        setpostListData(response.data[0]);
+        setUserInfoData(response.data[1][0]);
       });
+  };
+
+  const onClickPost = (post) => {
+    if (post.lock_yn !== "Y") navigate(`post/${post.post_id}`);
+    setPostId(post.post_id);
+    setModalVal("unlockPost");
+    setOpen("Modal");
+  };
+
+  const onClickModalTrue = () => {
+    if (modalVal === "unlockPost") {
+      axios.put(`/api/post/update`, {
+        param: {
+          user_id: userInfoData.user_id,
+          bank_idNum: userInfoData.bank_idNum,
+          post_id: postId,
+        },
+      });
+    } else if (modalVal === "unlockAllPost") {
+      axios.put(`/api/post/update/allPost`, {
+        param: {
+          user_id: userInfoData.user_id,
+          bank_idNum: userInfoData.bank_idNum,
+          coin_cnt: userInfoData.post_cnt,
+        },
+      });
+    } else if (modalVal === "unlockAllPostComplete") {
+      axios.put(`/api/post/update/allPostComplete`, {
+        param: {
+          user_id: userInfoData.user_id,
+          bank_idNum: userInfoData.bank_idNum,
+          coin_cnt: userInfoData.post_cnt,
+        },
+      });
+    }
+    settingUserInfo(userInfoData.user_id);
+    setOpen("");
   };
 
   return (
     <>
-      <ModalEdit
-        onClickModal={onClickHandler}
-        onCloseModal={() => setEditOpen(false)}
-        open={editOpen}
-      />
-      <Modal
-        value={`${coin}코인 중 1코인을 사용해 쪽지를 열어보겠습니까?`}
-        onClickModal={onClickUnlock}
-        onCloseModal={() => setOpen(false)}
-        open={open}
-      />
+      {open === "EditModal" && (
+        <ModalEdit
+          onClickModal={() => settingUserInfo(userInfoData.user_id)}
+          onCloseModal={() => setOpen("")}
+          userInfoData={userInfoData}
+        ></ModalEdit>
+      )}
+      {open === "Modal" && (
+        <Modal
+          modalValue={modalVal}
+          onClickModalTrue={onClickModalTrue}
+          onCloseModal={() => setOpen("")}
+          userInfoData={userInfoData}
+        />
+      )}
       <Wrapper>
+        현재 코인 {userInfoData.coin_cnt}코인
         <Container>
-          <Button title="작성" onClick={() => setEditOpen(true)}></Button>
+          <BankInfoContainer
+            onClick={() => {
+              userInfoData.post_cnt < userInfoData.target_num
+                ? setModalVal("unlockAllPost")
+                : setModalVal("unlockAllPostComplete");
+              setOpen("Modal");
+            }}
+          >
+            현재 작성 포스트/목표량 : {userInfoData.post_cnt}/
+            {userInfoData.target_num}
+          </BankInfoContainer>
+          <Button title="작성" onClick={() => setOpen("EditModal")}></Button>
         </Container>
         <PostList
-          posts={data}
-          onClickItem={(item) => {
-            setPostId(item.id);
-            item.lock_yn === "Y" ? setOpen(true) : navigate(`post/${postId}`);
-          }}
+          posts={postListData}
+          onClickItem={(post) => onClickPost(post)}
         />
       </Wrapper>
     </>

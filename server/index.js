@@ -9,8 +9,8 @@ app.use(bodyParser.json());
 app.get("/api/main", async (req, res) => {
   const { user_id } = req.query;
   const posts = await mysql.query("postList");
-  const coin = await mysql.query("selectUserCoin", user_id);
-  res.send([posts, coin]);
+  const userInfo = await mysql.query("selectUserInfo", user_id);
+  res.send([posts, userInfo]);
 });
 
 app.post("/api/post/write", async (req, res) => {
@@ -25,13 +25,33 @@ app.delete("/api/post/delete/:id", async (req, res) => {
   res.send(result);
 });
 
-app.put("/api/post/update/:id", async (req, res) => {
-  const { id } = req.params; // 라우트 경로의 :id에 매핑되는 값
-  const result = await mysql.query("postUnlock", id);
-  //const resultCoin = await mysql.query("updateReduceCoin", id);
-  res.send(result);
+app.put("/api/post/update", async (req, res) => {
+  const resultUnlock = await mysql.query("updateUnlockPost", [
+    req.body.param.user_id,
+    req.body.param.bank_idNum,
+    req.body.param.post_id,
+  ]);
+  const resultCoin = await mysql.query("updateCoinReduce", [
+    req.body.param.user_id,
+  ]);
+  res.send([resultUnlock, resultCoin]);
+});
+
+app.put("/api/post/update/allPost", async (req, res) => {
+  const resultUnlock = await mysql.query("updateUnlockAllPosts", [
+    req.body.param.user_id,
+    req.body.param.bank_idNum,
+  ]);
+  const resultBank = await mysql.query("updateBankStat", [
+    req.body.param.user_id,
+    req.body.param.bank_idNum,
+  ]);
+  const resultCoin = await mysql.query("updateGetCoins", [
+    req.body.param.coin_cnt,
+    req.body.param.user_id,
+  ]);
+  res.send([resultUnlock, resultBank, resultCoin]);
 });
 
 const port = 5000;
 app.listen(port, () => console.log(`포트번호 연결 ${port}!`));
-// 컴포넌트 구조화의 문제
