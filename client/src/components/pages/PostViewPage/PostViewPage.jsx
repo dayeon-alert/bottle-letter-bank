@@ -35,7 +35,7 @@ function PostViewPage() {
     axios
       .get("/api/main", { params: { user_id: "userid" } }) //
       .then((response) => {
-        setData(response.data[0]);
+        setData(response.data[1]);
       });
   }, []);
 

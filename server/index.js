@@ -8,9 +8,9 @@ app.use(bodyParser.json());
 
 app.get("/api/main", async (req, res) => {
   const { user_id } = req.query;
-  const posts = await mysql.query("postList");
   const userInfo = await mysql.query("selectUserInfo", user_id);
-  res.send([posts, userInfo]);
+  const posts = await mysql.query("postList", user_id);
+  res.send([userInfo, posts]);
 });
 
 app.post("/api/post/write", async (req, res) => {
@@ -42,12 +42,32 @@ app.put("/api/post/update/allPost", async (req, res) => {
     req.body.param.user_id,
     req.body.param.bank_idNum,
   ]);
+
   const resultBank = await mysql.query("updateBankStat", [
     req.body.param.user_id,
     req.body.param.bank_idNum,
   ]);
+
   const resultCoin = await mysql.query("updateGetCoins", [
     req.body.param.coin_cnt,
+    req.body.param.user_id,
+  ]);
+  res.send([resultUnlock, resultBank, resultCoin]);
+});
+
+app.put("/api/post/update/allPostComplete", async (req, res) => {
+  const resultUnlock = await mysql.query("updateUnlockAllPosts", [
+    req.body.param.user_id,
+    req.body.param.bank_idNum,
+  ]);
+
+  const resultBank = await mysql.query("updateBankStatComplete", [
+    req.body.param.user_id,
+    req.body.param.bank_idNum,
+  ]);
+
+  const resultCoin = await mysql.query("updateGetCoinsComplete", [
+    req.body.param.post_cnt,
     req.body.param.user_id,
   ]);
   res.send([resultUnlock, resultBank, resultCoin]);

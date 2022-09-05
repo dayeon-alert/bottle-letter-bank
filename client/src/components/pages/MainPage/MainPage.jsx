@@ -11,7 +11,7 @@ function MainPage() {
   const navigate = useNavigate();
 
   const [userInfoData, setUserInfoData] = useState({});
-  const [postListData, setpostListData] = useState([]);
+  const [postListData, setPostListData] = useState([]);
   const [open, setOpen] = useState("");
   const [postId, setPostId] = useState(0);
   const [modalVal, setModalVal] = useState();
@@ -22,8 +22,8 @@ function MainPage() {
     axios
       .get("/api/main", { params: { user_id: userId } }) //
       .then((response) => {
-        setpostListData(response.data[0]);
-        setUserInfoData(response.data[1][0]);
+        setUserInfoData(response.data[0][0]);
+        setPostListData(response.data[1]);
       });
   };
 
@@ -56,7 +56,7 @@ function MainPage() {
         param: {
           user_id: userInfoData.user_id,
           bank_idNum: userInfoData.bank_idNum,
-          coin_cnt: userInfoData.post_cnt,
+          post_cnt: userInfoData.post_cnt,
         },
       });
     }
@@ -95,7 +95,9 @@ function MainPage() {
             현재 작성 포스트/목표량 : {userInfoData.post_cnt}/
             {userInfoData.target_num}
           </BankInfoContainer>
-          <Button title="작성" onClick={() => setOpen("EditModal")}></Button>
+          {userInfoData.post_cnt < userInfoData.target_num && (
+            <Button title="작성" onClick={() => setOpen("EditModal")}></Button>
+          )}
         </Container>
         <PostList
           posts={postListData}
